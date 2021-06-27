@@ -1,0 +1,15 @@
+First things first, let's get an image showing on the screen.
+No network, no assets, just a basic old bitmap on an ImageView.
+
+Thinking of two approaches.
+
+Option A: Android objects come out of the Presenter object
+String resources are processed somewhere before the Presenter and passed out
+Images are process somewhere before the Presenter and passed out
+We may return a Drawable, which traps some Android API in the Presenter API
+But if the goal is for the View layer to be humble we either need a Presenter that returns a Drawable,
+Or Option B, some kind of Adapter that takes the Presenter output and returns a Drawable
+At this stage, the shape of the code is more unknown and we don't know
+whether mixing Android API with Presentation Logic will become cumbersome.
+Option A is less objects and less complex, so I vote we go that way and deal with it
+when/if coupling rears it's ugly head
