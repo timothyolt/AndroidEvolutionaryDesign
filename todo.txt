@@ -13,3 +13,12 @@ At this stage, the shape of the code is more unknown and we don't know
 whether mixing Android API with Presentation Logic will become cumbersome.
 Option A is less objects and less complex, so I vote we go that way and deal with it
 when/if coupling rears it's ugly head
+
+Ideally, start specific, then grow abstract.
+Returning Drawable outright from our presenter may not be healthy, because it's really not a primitive.
+It depends on Android, and many of the most complex of parts of it.
+We don't immediately gain value by returning Drawable, not at least until we need to return more than one format of image.
+And maybe even then, return less than the full drawable api.
+Maybe this starts to shape our own api taking the form of our domain language, and then drawable can render _that_.
+"The purpose of abstraction is not to be vague,
+but to create a new semantic level in which one can be absolutely precise." — Edsger Dijkstra.
