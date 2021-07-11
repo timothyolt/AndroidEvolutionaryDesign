@@ -25,3 +25,9 @@ but to create a new semantic level in which one can be absolutely precise." — 
 
 Maybe we should bootstrap testing from real Android code, and "pull up" into higher abstractions
 that can run on unit tests rather than instrumented tests.
+
+* Creating the imgur account
+* Pulling an image with HttpUrlConnection, right in the MainActivity, and show
+  * Extract presentation logic
+  * Extract network logic
+* Loading scaled image? or caching?

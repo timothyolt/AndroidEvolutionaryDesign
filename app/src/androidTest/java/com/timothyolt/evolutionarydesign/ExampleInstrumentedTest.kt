@@ -3,6 +3,8 @@ package com.timothyolt.evolutionarydesign
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.runner.RunWith
+import java.net.HttpURLConnection
+import java.net.URL
 import kotlin.test.*
 
 /**
