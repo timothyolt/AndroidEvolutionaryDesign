@@ -16,7 +16,18 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".auth.AuthenticationActivity"/>
+        <activity android:name=".auth.AuthenticationActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                        android:scheme="https"
+                        android:host="timothyolt.com"
+                        android:path="/android-evolutionary-design/login"
+                />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
