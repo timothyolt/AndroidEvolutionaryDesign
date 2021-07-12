@@ -34,16 +34,7 @@ class MainActivity : AppCompatActivity() {
 
         val inputStream = BufferedInputStream(connection.inputStream)
 
-        val data = ByteArray(connection.contentLength)
-        var offset = 0
-
-        while (offset < connection.contentLength) {
-            inputStream.read(data, offset, data.size - offset)
-                .takeIf { numBytes -> numBytes != -1 }
-                ?.also { numBytes -> offset += numBytes }
-                ?: break
-
-        }
+        val data = inputStream.readBytes()
 
         inputStream.close()
 
