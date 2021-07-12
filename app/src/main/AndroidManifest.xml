@@ -9,12 +9,25 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/Theme.AndroidEvolutionaryDesign">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity" android:exported="true"/>
+        <activity android:name=".auth.AuthenticationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                        android:scheme="http"
+                        android:host="timothyolt.com"
+                        android:path="/android-evolutionary-design/login"
+                />
+            </intent-filter>
+            <!-- Because we are doing auth out-of-order right now -->
+            <meta-data android:name="android.app.shortcuts"
+                       android:resource="@xml/shortcuts" />
         </activity>
     </application>
 
