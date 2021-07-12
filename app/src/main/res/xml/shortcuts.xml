@@ -1,0 +1,13 @@
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Because we are doing auth out-of-order right now -->
+    <shortcut
+            android:shortcutId="main"
+            android:shortcutShortLabel="@string/bypass_oauth"
+            android:enabled="true">
+        <intent
+                android:action="android.intent.action.VIEW"
+                android:targetPackage="com.timothyolt.evolutionarydesign"
+                android:targetClass="com.timothyolt.evolutionarydesign.MainActivity" />
+    </shortcut>
+</shortcuts>
