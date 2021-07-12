@@ -5,21 +5,36 @@ import android.content.Intent
 import android.net.Uri
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.launchActivity
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.RootMatchers.withDecorView
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.Intents.intended
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasData
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import org.hamcrest.Matchers.not
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
+import com.timothyolt.evolutionarydesign.MainActivity
+import org.hamcrest.Matchers.allOf
 import org.junit.runner.RunWith
 import kotlin.test.*
 
 
 @RunWith(AndroidJUnit4::class)
 class AuthenticationInstrumentedTest {
+
+    @Test
+    fun startAuthentication() {
+        Intents.init()
+        val imgurUrl = "https://api.imgur.com/oauth2/authorize?client_id=6b1112a4f9783ad&response_type=token"
+        val openImgurIntent = allOf(hasAction(Intent.ACTION_VIEW), hasData(imgurUrl))
+
+        launchActivity<AuthenticationActivity>()
+
+        intended(openImgurIntent)
+        Intents.release()
+    }
+
     @Test
     fun resumeAuthentication() {
+        val mainActivityMonitor = getInstrumentation().addMonitor(MainActivity::class.java.name, null, false)
         val scenario = launchActivity<Activity>(
             Intent(
                 Intent.ACTION_VIEW
@@ -27,23 +42,10 @@ class AuthenticationInstrumentedTest {
                 data = Uri.parse("http://timothyolt.com/android-evolutionary-design/login#access_token=test")
             }
         )
-        // todo: test toast?
-//        scenario.onActivity { activity ->
-//            onView(
-//                withText("test")
-//            ).inRoot(
-//                withDecorView(not(activity.window.decorView))
-//            ).check(
-//                matches(isDisplayed())
-//            )
-//        }
-        assertEquals(Lifecycle.State.DESTROYED, scenario.state)
         // todo: assert login state set
-    }
-
-    @Test
-    fun startAuthentication() {
-        val activity = launchActivity<AuthenticationActivity>()
-        activity.moveToState(Lifecycle.State.DESTROYED)
+        val mainActivity = getInstrumentation().waitForMonitorWithTimeout(mainActivityMonitor, 5000)
+        assertNotNull(mainActivity)
+        mainActivity.finish()
+        scenario.onActivity { assertEquals(true, it.isFinishing) }
     }
 }

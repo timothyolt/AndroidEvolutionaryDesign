@@ -4,21 +4,34 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.timothyolt.evolutionarydesign.MainActivity
 
 class AuthenticationActivity : AppCompatActivity() {
+
+    private var textView: TextView? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(LinearLayout(this))
+        textView = TextView(this)
+        setContentView(textView)
+    }
+
+    override fun onResume() {
+        super.onResume()
         val authentication = authentication(intent)
         if (authentication == null) {
+            textView?.text = "Redirecting to Imgur..."
             val outgoingOAuthIntent = Intent(Intent.ACTION_VIEW).apply {
                 data = Uri.parse("https://api.imgur.com/oauth2/authorize?client_id=6b1112a4f9783ad&response_type=token")
             }
             startActivity(outgoingOAuthIntent)
         } else {
-            Toast.makeText(this, authentication.accessToken, Toast.LENGTH_LONG).show()
+            textView?.text = "Redirecting to App..."
+            // the good old anti-pattern
+            startActivity(Intent(this, MainActivity::class.java))
             finish()
         }
     }
