@@ -34,9 +34,7 @@ class MainActivity : AppCompatActivity() {
 
         val inputStream = BufferedInputStream(connection.inputStream)
 
-        val data = inputStream.readBytes()
-
-        inputStream.close()
+        val data = inputStream.use { inputStream.readBytes() }
 
         connection.disconnect()
 
