@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JavaProjectCodeInsightSettings">
+    <excluded-names>
+      <name>junit.framework.Assert</name>
+      <name>junit.framework.TestCase</name>
+      <name>kotlin.test.junit</name>
+      <name>org.junit.After</name>
+      <name>org.junit.AfterClass</name>
+      <name>org.junit.Assert</name>
+      <name>org.junit.Before</name>
+      <name>org.junit.BeforeClass</name>
+      <name>org.junit.Ignore</name>
+      <name>org.junit.Test</name>
+      <name>org.junit.jupiter.api.After</name>
+      <name>org.junit.jupiter.api.AfterAll</name>
+      <name>org.junit.jupiter.api.AssertAll</name>
+      <name>org.junit.jupiter.api.AssertArrayEquals</name>
+      <name>org.junit.jupiter.api.AssertDoesNotThrow</name>
+      <name>org.junit.jupiter.api.AssertEquals</name>
+      <name>org.junit.jupiter.api.AssertFalse</name>
+      <name>org.junit.jupiter.api.AssertIterableEquals</name>
+      <name>org.junit.jupiter.api.AssertLinesMatch</name>
+      <name>org.junit.jupiter.api.AssertNotEquals</name>
+      <name>org.junit.jupiter.api.AssertNotNull</name>
+      <name>org.junit.jupiter.api.AssertNotSame</name>
+      <name>org.junit.jupiter.api.AssertThrows</name>
+      <name>org.junit.jupiter.api.AssertTimeout</name>
+      <name>org.junit.jupiter.api.AssertTrue</name>
+      <name>org.junit.jupiter.api.AssertTrue</name>
+      <name>org.junit.jupiter.api.AssertionUtils</name>
+      <name>org.junit.jupiter.api.Assertions</name>
+      <name>org.junit.jupiter.api.AssertionsKt</name>
+      <name>org.junit.jupiter.api.Before</name>
+      <name>org.junit.jupiter.api.BeforeAll</name>
+      <name>org.junit.jupiter.api.Disabled</name>
+      <name>org.junit.jupiter.api.Test</name>
+    </excluded-names>
+  </component>
+</project>
