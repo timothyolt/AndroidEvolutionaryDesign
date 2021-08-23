@@ -3,6 +3,24 @@ plugins {
     id 'kotlin-android'
 }
 
+static Map<String, ?> propertiesWithLocals(Project project) {
+    def properties = new HashMap<String, ?>()
+    properties.putAll(localProperties(project.rootProject))
+    properties.putAll(localProperties(project))
+    properties.putAll(project.properties)
+    return properties
+}
+
+static Map<String, ?> localProperties(Project project) {
+    def file = project.file('local.properties')
+    if (!file.exists()) return new HashMap<String, ?>()
+    return file.withReader('UTF-8') { reader ->
+        Properties localProperties = new Properties()
+        localProperties.load(reader)
+        return localProperties
+    }
+}
+
 android {
     compileSdkVersion 30
 
@@ -12,6 +30,16 @@ android {
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
+
+        def localProperties = localProperties(project)
+        
+        manifestPlaceholders.put('oauthScheme', localProperties["oauth.scheme"].toString())
+        manifestPlaceholders.put('oauthHost', localProperties["oauth.host"].toString())
+        manifestPlaceholders.put('oauthPath', localProperties["oauth.path"].toString())
+
+        buildConfigField "String", "OAUTH_SCHEME", "\""+localProperties["oauth.scheme"].toString()+"\""
+        buildConfigField "String", "OAUTH_HOST", "\""+localProperties["oauth.host"].toString()+"\""
+        buildConfigField "String", "OAUTH_PATH", "\""+localProperties["oauth.path"].toString()+"\""
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

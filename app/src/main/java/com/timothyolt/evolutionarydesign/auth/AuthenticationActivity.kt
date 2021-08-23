@@ -7,6 +7,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.timothyolt.evolutionarydesign.BuildConfig
 import com.timothyolt.evolutionarydesign.MainActivity
 
 class AuthenticationActivity : AppCompatActivity() {
@@ -63,4 +64,15 @@ class AuthenticationActivity : AppCompatActivity() {
         val tokenType: String?,
         val expiresIn: String?
     )
+
+    companion object {
+        private const val TAG = "AuthActivity"
+
+        private const val ACCESS_TOKEN_KEY = "access_token"
+        private const val TOKEN_TYPE_KEY = "token_type"
+        private const val EXPIRY_KEY = "expires_in"
+
+        private const val OAUTH_SCHEME = BuildConfig.OAUTH_SCHEME
+        private const val OAUTH_PATH = BuildConfig.OAUTH_PATH
+    }
 }
