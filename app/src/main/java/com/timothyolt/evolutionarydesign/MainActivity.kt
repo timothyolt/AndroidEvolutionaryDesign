@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.timothyolt.evolutionarydesign.auth.AuthenticationActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -13,8 +14,15 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 class MainActivity : AppCompatActivity() {
+
+    data class Dependencies(val httpUrl: String)
+
+    private lateinit var dependencies: Dependencies
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        dependencies = injectMe()
+        val string = requireInjector().injectAuth(AuthenticationActivity())
         setContentView(R.layout.activity_main)
 
         lifecycleScope.launch {
@@ -28,7 +36,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private suspend fun getImage(): ByteArray = withContext(Dispatchers.IO) {
-        val connection = URL("https://i.imgur.com/GSwTJrM.jpeg")
+        val connection = URL(dependencies.httpUrl)
             .let { it.openConnection() as HttpURLConnection }
             .apply { requestMethod = "GET" }
 

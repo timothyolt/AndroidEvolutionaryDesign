@@ -21,6 +21,7 @@ import kotlin.test.*
 class AuthenticationInstrumentedTest {
 
     @Test
+    @Ignore
     fun startAuthentication() {
         Intents.init()
         val imgurUrl = "https://api.imgur.com/oauth2/authorize?client_id=6b1112a4f9783ad&response_type=token"
@@ -33,6 +34,7 @@ class AuthenticationInstrumentedTest {
     }
 
     @Test
+    @Ignore
     fun resumeAuthentication() {
         val mainActivityMonitor = getInstrumentation().addMonitor(MainActivity::class.java.name, null, false)
         val scenario = launchActivity<Activity>(
