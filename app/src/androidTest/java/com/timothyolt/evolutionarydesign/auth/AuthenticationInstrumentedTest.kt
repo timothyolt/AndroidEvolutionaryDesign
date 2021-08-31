@@ -10,6 +10,7 @@ import androidx.test.espresso.intent.matcher.IntentMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.timothyolt.evolutionarydesign.*
+import com.timothyolt.evolutionarydesign.album.AlbumActivity
 import com.timothyolt.evolutionarydesign.apparatus.LaunchOptions
 import com.timothyolt.evolutionarydesign.apparatus.StubActivity
 import com.timothyolt.evolutionarydesign.apparatus.launchActivity
@@ -30,7 +31,7 @@ class AuthenticationInstrumentedTest {
             object : AuthenticationActivity.Dependencies {
                 override val oAuthRequestUrl = "http://timothyolt.com"
                 override val oAuthCallbackUrl = "http://timothyolt.com/android-evolutionary-design/login"
-                override val navigateToMain = Intent(activity, MainActivity::class.java)
+                override val navigateToMain = Intent(activity, AlbumActivity::class.java)
             }
         }
 

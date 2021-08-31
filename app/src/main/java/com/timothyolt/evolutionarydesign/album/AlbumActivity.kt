@@ -1,21 +1,21 @@
-package com.timothyolt.evolutionarydesign
+package com.timothyolt.evolutionarydesign.album
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import androidx.recyclerview.widget.RecyclerView
+import com.timothyolt.evolutionarydesign.image.Image
+import com.timothyolt.evolutionarydesign.image.ImageAdapter
+import com.timothyolt.evolutionarydesign.R
+import com.timothyolt.evolutionarydesign.requireInjector
+import kotlinx.coroutines.*
 import org.json.JSONObject
 import java.io.BufferedInputStream
 import java.net.HttpURLConnection
 import java.net.URL
 
-class MainActivity : AppCompatActivity() {
+class AlbumActivity : AppCompatActivity() {
 
     data class Dependencies(val albumId: String)
 
@@ -25,27 +25,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         dependencies = requireInjector().inject(this)
         setContentView(R.layout.activity_main)
+        val adapter = ImageAdapter()
+        findViewById<RecyclerView>(R.id.images).adapter = adapter
 
         lifecycleScope.launch {
             val album = getAlbum(albumId = dependencies.albumId)
-            val image = album.images.first()
-            val bitmap = getBitmap(image.link)
 
-            findViewById<TextView>(R.id.hello).text = image.title
-            findViewById<ImageView>(R.id.image).setImageBitmap(bitmap)
+            findViewById<TextView>(R.id.albumTitle).text = album.title
+            adapter.updateImages(album.images)
         }
-    }
-
-    data class Album(
-        val title: String,
-        val description: String,
-        val images: List<Image>
-    ) {
-        data class Image(
-            val title: String,
-            val description: String,
-            val link: String
-        )
     }
 
     private suspend fun getAlbum(albumId: String): Album = withContext(Dispatchers.IO) {
@@ -70,7 +58,7 @@ class MainActivity : AppCompatActivity() {
                     images = getJSONArray("images").run {
                         (0 until length()).map {
                             getJSONObject(it).run {
-                                Album.Image(
+                                Image(
                                     title = getString("title"),
                                     description = getString("description"),
                                     link = getString("link")
@@ -81,19 +69,5 @@ class MainActivity : AppCompatActivity() {
                 )
             }
         } else error("http code ${json.getInt("status")}")
-    }
-
-    private suspend fun getBitmap(imageUrl: String): Bitmap = withContext(Dispatchers.IO) {
-        val connection = URL(imageUrl)
-            .let { it.openConnection() as HttpURLConnection }
-            .apply { requestMethod = "GET" }
-
-        val inputStream = BufferedInputStream(connection.inputStream)
-
-        val data = inputStream.use { inputStream.readBytes() }
-
-        connection.disconnect()
-
-        BitmapFactory.decodeByteArray(data, 0, data.size)
     }
 }
