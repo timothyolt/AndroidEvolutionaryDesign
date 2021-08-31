@@ -1,7 +1,9 @@
-package com.timothyolt.evolutionarydesign
+package com.timothyolt.evolutionarydesign.apparatus
 
 import android.app.Application
 import androidx.test.platform.app.InstrumentationRegistry
+import com.timothyolt.evolutionarydesign.EvolutionaryDesignApp
+import com.timothyolt.evolutionarydesign.Injector
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
 import kotlin.reflect.KClass
@@ -31,7 +33,7 @@ class TestApp : Application(), EvolutionaryDesignApp {
 
     fun <T : Any, R> registerInjector(
         injectMethod: KFunction2<Injector, T, R>,
-        inject: T.() -> R
+        inject: (T) -> R
     ) {
         val javaMethod = injectMethod.legalJavaMethod
         if (javaMethod !in injectorsByMethod) {
@@ -45,9 +47,9 @@ class TestApp : Application(), EvolutionaryDesignApp {
         injectorsByMethod.remove(injectMethod.legalJavaMethod)
     }
 
-    fun <A: Any, R, U> useInjector(
-        injectMethod: KFunction2<Injector, A, R>,
-        inject: A.() -> R,
+    fun <T : Any, R, U> useInjector(
+        injectMethod: KFunction2<Injector, T, R>,
+        inject: (T) -> R,
         use: () -> U
     ): U {
         registerInjector(injectMethod, inject)

@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.timothyolt.evolutionarydesign.auth.AuthenticationActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -21,8 +20,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        dependencies = injectMe()
-        val string = requireInjector().injectAuth(AuthenticationActivity())
+        dependencies = requireInjector().inject(this)
         setContentView(R.layout.activity_main)
 
         lifecycleScope.launch {
