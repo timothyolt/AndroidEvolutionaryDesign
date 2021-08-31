@@ -10,7 +10,9 @@ import androidx.test.espresso.intent.matcher.IntentMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.timothyolt.evolutionarydesign.*
+import com.timothyolt.evolutionarydesign.apparatus.LaunchOptions
 import com.timothyolt.evolutionarydesign.apparatus.StubActivity
+import com.timothyolt.evolutionarydesign.apparatus.launchActivity
 import org.hamcrest.Matchers.allOf
 import org.junit.runner.RunWith
 import kotlin.test.*
