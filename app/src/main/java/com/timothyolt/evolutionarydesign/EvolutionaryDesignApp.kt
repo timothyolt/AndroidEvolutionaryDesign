@@ -20,7 +20,7 @@ class ReleaseEvolutionaryDesignApp : Application(), EvolutionaryDesignApp {
 
     override val injector = object : Injector {
         override fun inject(activity: MainActivity) =
-            MainActivity.Dependencies(httpUrl = "https://i.imgur.com/GSwTJrM.jpeg")
+            MainActivity.Dependencies(albumId = "cQpfWgn")
 
         override fun inject(activity: AuthenticationActivity) =
             object : AuthenticationActivity.Dependencies {
