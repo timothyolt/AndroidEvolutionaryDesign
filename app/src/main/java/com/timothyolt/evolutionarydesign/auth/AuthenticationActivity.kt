@@ -3,19 +3,25 @@ package com.timothyolt.evolutionarydesign.auth
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.timothyolt.evolutionarydesign.BuildConfig
-import com.timothyolt.evolutionarydesign.MainActivity
+import com.timothyolt.evolutionarydesign.requireInjector
 
 class AuthenticationActivity : AppCompatActivity() {
+
+    interface Dependencies {
+        val oAuthRequestUrl: String
+        val oAuthCallbackUrl: String
+        val navigateToMain: Intent
+    }
+
+    private lateinit var dependencies: Dependencies
 
     private var textView: TextView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        dependencies = requireInjector().inject(this)
         textView = TextView(this)
         setContentView(textView)
     }
@@ -26,25 +32,25 @@ class AuthenticationActivity : AppCompatActivity() {
         if (authentication == null) {
             textView?.text = "Redirecting to Imgur..."
             val outgoingOAuthIntent = Intent(Intent.ACTION_VIEW).apply {
-                data = Uri.parse("https://api.imgur.com/oauth2/authorize?client_id=6b1112a4f9783ad&response_type=token")
+                data = Uri.parse(dependencies.oAuthRequestUrl)
             }
             startActivity(outgoingOAuthIntent)
         } else {
             textView?.text = "Redirecting to App..."
-            // the good old anti-pattern
-            startActivity(Intent(this, MainActivity::class.java))
+            startActivity(dependencies.navigateToMain)
             finish()
         }
     }
 
     private fun authentication(intent: Intent): Authentication? {
-        val uri = intent.data
-        return if (
-            uri != null
-            && uri.host == "timothyolt.com"
-            && uri.path == "/android-evolutionary-design/login"
-        ) {
-            val fragments = uri.fragment?.split('&')?.associate {
+        val expectedUri = Uri.parse(dependencies.oAuthCallbackUrl)
+        val intentBaseUri = intent.data?.run {
+            buildUpon()
+                .fragment(null)
+                .build()
+        }
+        return if (intentBaseUri != null && intentBaseUri == expectedUri) {
+            val fragments = intent.data?.fragment?.split('&')?.associate {
                 val (first, second) = it.split('=')
                 first to second
             } ?: emptyMap()
@@ -59,20 +65,15 @@ class AuthenticationActivity : AppCompatActivity() {
         } else null
     }
 
-    data class Authentication(
+    private data class Authentication(
         val accessToken: String,
         val tokenType: String?,
         val expiresIn: String?
     )
 
     companion object {
-        private const val TAG = "AuthActivity"
-
         private const val ACCESS_TOKEN_KEY = "access_token"
         private const val TOKEN_TYPE_KEY = "token_type"
         private const val EXPIRY_KEY = "expires_in"
-
-        private const val OAUTH_SCHEME = BuildConfig.OAUTH_SCHEME
-        private const val OAUTH_PATH = BuildConfig.OAUTH_PATH
     }
 }
