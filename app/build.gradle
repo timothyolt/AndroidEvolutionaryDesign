@@ -12,13 +12,13 @@ static Map<String, ?> propertiesWithLocals(Project project) {
 }
 
 static Map<String, ?> localProperties(Project project) {
-    def file = project.file('local.properties')
+    def file = project.rootProject.file('local.properties')
     if (!file.exists()) return new HashMap<String, ?>()
     return file.withReader('UTF-8') { reader ->
         Properties localProperties = new Properties()
         localProperties.load(reader)
         return localProperties
-    }
+    } as Map<String, ?>
 }
 
 android {
@@ -33,14 +33,23 @@ android {
         versionName "1.0"
 
         def localProperties = localProperties(project)
-        
-        manifestPlaceholders.put('oauthScheme', localProperties["oauth.scheme"].toString())
-        manifestPlaceholders.put('oauthHost', localProperties["oauth.host"].toString())
-        manifestPlaceholders.put('oauthPath', localProperties["oauth.path"].toString())
 
-        buildConfigField "String", "OAUTH_SCHEME", "\""+localProperties["oauth.scheme"].toString()+"\""
-        buildConfigField "String", "OAUTH_HOST", "\""+localProperties["oauth.host"].toString()+"\""
-        buildConfigField "String", "OAUTH_PATH", "\""+localProperties["oauth.path"].toString()+"\""
+        println localProperties.entrySet().size()
+        localProperties
+                .entrySet()
+                .findAll {
+                    it.getKey().startsWith("evolutionarydesign.runtime.")
+                }.forEach {
+                    def localKey = it.getKey().replaceFirst("evolutionarydesign.runtime.", "")
+
+                    def camelCaseKey = localKey.split('.').toList().collect {
+                        it[0].capitalize() + it.substring(0, it.length() - 1)
+                    }
+                    manifestPlaceholders.put(camelCaseKey, it.getValue().toString())
+
+                    def upperCaseKey = localKey.replace('.', '_').toUpperCase()
+                    buildConfigField "String", upperCaseKey, "\""+it.getValue().toString()+"\""
+                }
 
         testInstrumentationRunner "com.timothyolt.evolutionarydesign.MyTestRunner"
     }
