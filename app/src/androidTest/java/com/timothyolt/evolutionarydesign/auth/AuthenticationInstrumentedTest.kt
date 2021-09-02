@@ -1,21 +1,21 @@
 package com.timothyolt.evolutionarydesign.auth
 
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import androidx.lifecycle.Lifecycle
-import androidx.test.core.app.launchActivity
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasData
+import androidx.test.espresso.intent.Intents.intending
+import androidx.test.espresso.intent.matcher.IntentMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
-import com.timothyolt.evolutionarydesign.MainActivity
+import androidx.test.platform.app.InstrumentationRegistry
+import com.timothyolt.evolutionarydesign.*
+import com.timothyolt.evolutionarydesign.apparatus.LaunchOptions
+import com.timothyolt.evolutionarydesign.apparatus.StubActivity
+import com.timothyolt.evolutionarydesign.apparatus.launchActivity
 import org.hamcrest.Matchers.allOf
 import org.junit.runner.RunWith
 import kotlin.test.*
-
 
 @RunWith(AndroidJUnit4::class)
 class AuthenticationInstrumentedTest {
@@ -23,10 +23,16 @@ class AuthenticationInstrumentedTest {
     @Test
     fun startAuthentication() {
         Intents.init()
-        val imgurUrl = "https://api.imgur.com/oauth2/authorize?client_id=6b1112a4f9783ad&response_type=token"
-        val openImgurIntent = allOf(hasAction(Intent.ACTION_VIEW), hasData(imgurUrl))
+        val openImgurIntent = allOf(hasAction(Intent.ACTION_VIEW), hasData("http://timothyolt.com"))
+        intending(openImgurIntent)
 
-        launchActivity<AuthenticationActivity>()
+        launchActivity(Injector::inject, AuthenticationActivity::class) { activity ->
+            object : AuthenticationActivity.Dependencies {
+                override val oAuthRequestUrl = "http://timothyolt.com"
+                override val oAuthCallbackUrl = "http://timothyolt.com/android-evolutionary-design/login"
+                override val navigateToMain = Intent(activity, MainActivity::class.java)
+            }
+        }
 
         intended(openImgurIntent)
         Intents.release()
@@ -34,18 +40,30 @@ class AuthenticationInstrumentedTest {
 
     @Test
     fun resumeAuthentication() {
-        val mainActivityMonitor = getInstrumentation().addMonitor(MainActivity::class.java.name, null, false)
-        val scenario = launchActivity<Activity>(
-            Intent(
-                Intent.ACTION_VIEW
-            ).apply {
-                data = Uri.parse("http://timothyolt.com/android-evolutionary-design/login#access_token=test")
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val mainActivityMonitor = instrumentation.addMonitor(StubActivity::class.java.name, null, false)
+
+        val intent = Intent(
+            Intent.ACTION_VIEW
+        ).apply {
+            data = Uri.parse("http://timothyolt.com/android-evolutionary-design/login#access_token=test")
+        }
+        val scenario = launchActivity(LaunchOptions(intent), Injector::inject, AuthenticationActivity::class) { activity ->
+            object : AuthenticationActivity.Dependencies {
+                override val oAuthRequestUrl = "http://timothyolt.com"
+                override val oAuthCallbackUrl = "http://timothyolt.com/android-evolutionary-design/login"
+                override val navigateToMain = Intent(instrumentation.context, StubActivity::class.java)
             }
-        )
+        }
+
         // todo: assert login state set
-        val mainActivity = getInstrumentation().waitForMonitorWithTimeout(mainActivityMonitor, 5000)
-        assertNotNull(mainActivity)
-        mainActivity.finish()
-        scenario.onActivity { assertEquals(true, it.isFinishing) }
+        val hitMainActivity = instrumentation.checkMonitorHit(mainActivityMonitor, 1)
+        assertEquals(true, hitMainActivity)
+
+        if (scenario.state != Lifecycle.State.DESTROYED) {
+            scenario.onActivity { assertEquals(true, it?.isFinishing) }
+        }
+
+        instrumentation.removeMonitor(mainActivityMonitor)
     }
 }
