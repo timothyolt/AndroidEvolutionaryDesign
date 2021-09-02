@@ -8,12 +8,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.timothyolt.evolutionarydesign.image.Image
 import com.timothyolt.evolutionarydesign.image.ImageAdapter
 import com.timothyolt.evolutionarydesign.R
+import com.timothyolt.evolutionarydesign.networking.asUrlReadBytes
 import com.timothyolt.evolutionarydesign.requireInjector
 import kotlinx.coroutines.*
 import org.json.JSONObject
-import java.io.BufferedInputStream
 import java.net.HttpURLConnection
-import java.net.URL
 
 class AlbumActivity : AppCompatActivity() {
 
@@ -37,37 +36,34 @@ class AlbumActivity : AppCompatActivity() {
     }
 
     private suspend fun getAlbum(albumId: String): Album = withContext(Dispatchers.IO) {
-        val connection = URL("https://api.imgur.com/3/album/$albumId")
-            .let { it.openConnection() as HttpURLConnection }
-            .apply {
-                requestMethod = "GET"
-                addRequestProperty("Authorization", "Client-ID 6b1112a4f9783ad")
-            }
-
-        val inputStream = BufferedInputStream(connection.inputStream)
-
-        val bytes = inputStream.use { it.readBytes() }
+        val bytes = "https://api.imgur.com/3/album/$albumId".asUrlReadBytes {
+            (this as HttpURLConnection).requestMethod = "GET"
+            addRequestProperty("Authorization", "Client-ID 6b1112a4f9783ad")
+        }
         val string = String(bytes)
         val json = JSONObject(string)
 
-        if (json.getBoolean("success")) {
-            json.getJSONObject("data").run {
-                Album(
-                    title = getString("title"),
-                    description = getString("description"),
-                    images = getJSONArray("images").run {
-                        (0 until length()).map {
-                            getJSONObject(it).run {
-                                Image(
-                                    title = getString("title"),
-                                    description = getString("description"),
-                                    link = getString("link")
-                                )
-                            }
-                        }
-                    }
-                )
-            }
-        } else error("http code ${json.getInt("status")}")
+        json.asImgurResponse { asAlbum() }
     }
+
+    private fun <R> JSONObject.asImgurResponse(data: JSONObject.() -> R): R =
+        if (getBoolean("success")) {
+            getJSONObject("data").data()
+        } else error("http code ${getInt("status")}")
+
+    private fun JSONObject.asAlbum() = Album(
+        title = getString("title"),
+        description = getString("description"),
+        images = getJSONArray("images").run {
+            (0 until length()).map {
+                getJSONObject(it).asImage()
+            }
+        }
+    )
+
+    private fun JSONObject.asImage() = Image(
+        title = getString("title"),
+        description = getString("description"),
+        link = getString("link")
+    )
 }
