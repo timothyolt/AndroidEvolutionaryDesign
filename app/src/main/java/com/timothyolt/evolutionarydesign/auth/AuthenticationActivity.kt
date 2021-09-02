@@ -70,10 +70,4 @@ class AuthenticationActivity : AppCompatActivity() {
         val tokenType: String?,
         val expiresIn: String?
     )
-
-    companion object {
-        private const val ACCESS_TOKEN_KEY = "access_token"
-        private const val TOKEN_TYPE_KEY = "token_type"
-        private const val EXPIRY_KEY = "expires_in"
-    }
 }
