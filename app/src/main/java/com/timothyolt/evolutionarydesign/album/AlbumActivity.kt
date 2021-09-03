@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.timothyolt.evolutionarydesign.image.Image
 import com.timothyolt.evolutionarydesign.image.ImageAdapter
 import com.timothyolt.evolutionarydesign.R
+import com.timothyolt.evolutionarydesign.auth.Authentication
 import com.timothyolt.evolutionarydesign.networking.asUrlReadBytes
 import com.timothyolt.evolutionarydesign.requireInjector
 import kotlinx.coroutines.*
@@ -22,7 +23,10 @@ import java.net.HttpURLConnection
 
 class AlbumActivity : AppCompatActivity() {
 
-    data class Dependencies(val albumId: String)
+    interface Dependencies {
+        val albumId: String
+        val authentication: Authentication.State
+    }
 
     private lateinit var dependencies: Dependencies
 
