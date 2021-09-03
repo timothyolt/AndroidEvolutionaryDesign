@@ -66,7 +66,6 @@ class AlbumActivity : AppCompatActivity() {
 
     private suspend fun getAlbum(albumId: String): Album = withContext(Dispatchers.IO) {
         val bytes = "https://api.imgur.com/3/album/$albumId".asUrlReadBytes {
-            (this as HttpURLConnection).requestMethod = "GET"
             addRequestProperty("Authorization", "Client-ID 6b1112a4f9783ad")
         }
         val string = String(bytes)

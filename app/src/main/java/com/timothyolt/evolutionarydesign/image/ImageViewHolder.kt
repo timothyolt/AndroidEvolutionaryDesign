@@ -37,9 +37,7 @@ class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 }
 
 suspend fun getBitmap(imageUrl: String): Bitmap = withContext(Dispatchers.IO) {
-    val bytes = imageUrl.asUrlReadBytes {
-        (this as HttpURLConnection).requestMethod = "GET"
-    }
+    val bytes = imageUrl.asUrlReadBytes { }
 
     BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
 }
