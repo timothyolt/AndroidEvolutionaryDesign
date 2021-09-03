@@ -42,9 +42,11 @@ android {
                 }.forEach {
                     def localKey = it.getKey().replaceFirst("evolutionarydesign.runtime.", "")
 
-                    def camelCaseKey = localKey.split('.').toList().collect {
-                        it[0].capitalize() + it.substring(0, it.length() - 1)
+                    def keyWords = localKey.split('\\.').toList()
+                    def camelCaseWords = keyWords.take(1) + keyWords.drop(1).collect {
+                        it[0].capitalize() + it.substring(1, it.length())
                     }
+                    def camelCaseKey = camelCaseWords.join("")
                     manifestPlaceholders.put(camelCaseKey, it.getValue().toString())
 
                     def upperCaseKey = localKey.replace('.', '_').toUpperCase()
