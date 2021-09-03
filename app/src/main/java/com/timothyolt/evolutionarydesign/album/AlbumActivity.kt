@@ -5,6 +5,7 @@ import android.graphics.ImageDecoder
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Base64
 import android.widget.Button
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
@@ -16,11 +17,12 @@ import com.timothyolt.evolutionarydesign.image.ImageAdapter
 import com.timothyolt.evolutionarydesign.R
 import com.timothyolt.evolutionarydesign.auth.Authentication
 import com.timothyolt.evolutionarydesign.networking.asUrl
+import com.timothyolt.evolutionarydesign.networking.connection
 import com.timothyolt.evolutionarydesign.networking.readBytes
 import com.timothyolt.evolutionarydesign.requireInjector
 import kotlinx.coroutines.*
 import org.json.JSONObject
-import java.net.HttpURLConnection
+import java.io.ByteArrayOutputStream
 
 class AlbumActivity : AppCompatActivity() {
 
@@ -66,8 +68,9 @@ class AlbumActivity : AppCompatActivity() {
     }
 
     private suspend fun getAlbum(albumId: String): Album = withContext(Dispatchers.IO) {
-        val bytes = "https://api.imgur.com/3/album/$albumId".asUrl().readBytes {
+        val bytes = "https://api.imgur.com/3/album/$albumId".asUrl().connection {
             addRequestProperty("Authorization", "Client-ID 6b1112a4f9783ad")
+            readBytes()
         }
         val string = String(bytes)
         val json = JSONObject(string)
@@ -102,6 +105,12 @@ class AlbumActivity : AppCompatActivity() {
      * @return A reference to the upload job.
      */
     private fun uploadImage(image: Bitmap) = GlobalScope.launch {
+        val outputStream = ByteArrayOutputStream()
+        image.compress(Bitmap.CompressFormat.PNG, 0, outputStream) // YOU can also save it in JPEG
+        val pngBytes = outputStream.toByteArray()
+        val pngBase64 = Base64.encode(pngBytes, 0)
+        val pngBase64String = String(pngBase64)
+
 
     }
 }
