@@ -6,9 +6,8 @@ import java.net.URL
 import java.net.URLConnection
 
 @Suppress("BlockingMethodInNonBlockingContext")
-suspend fun String.asUrlReadBytes(block: URLConnection.() -> Unit): ByteArray = withContext(Dispatchers.IO) {
-    URL(this@asUrlReadBytes)
-        .openConnection()
+suspend fun URL.readBytes(block: URLConnection.() -> Unit = {}): ByteArray = withContext(Dispatchers.IO) {
+    openConnection()
         .apply(block)
         .getInputStream()
         .buffered()

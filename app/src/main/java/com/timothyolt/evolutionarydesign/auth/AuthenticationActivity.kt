@@ -13,6 +13,7 @@ class AuthenticationActivity : AppCompatActivity() {
         val oAuthRequestUrl: String
         val oAuthCallbackUrl: String
         val navigateToMain: Intent
+        val authentication: Authentication
     }
 
     private lateinit var dependencies: Dependencies
@@ -36,13 +37,14 @@ class AuthenticationActivity : AppCompatActivity() {
             }
             startActivity(outgoingOAuthIntent)
         } else {
+            dependencies.authentication.state = authentication
             textView?.text = "Redirecting to App..."
             startActivity(dependencies.navigateToMain)
             finish()
         }
     }
 
-    private fun authentication(intent: Intent): Authentication? {
+    private fun authentication(intent: Intent): Authentication.State? {
         val expectedUri = Uri.parse(dependencies.oAuthCallbackUrl)
         val intentBaseUri = intent.data?.run {
             buildUpon()
@@ -56,7 +58,7 @@ class AuthenticationActivity : AppCompatActivity() {
             } ?: emptyMap()
             val accessToken = fragments["access_token"]
             if (accessToken != null) {
-                Authentication(
+                Authentication.State(
                     accessToken = accessToken,
                     tokenType = fragments["token_type"],
                     expiresIn = fragments["expires_in"]
@@ -64,10 +66,4 @@ class AuthenticationActivity : AppCompatActivity() {
             } else null
         } else null
     }
-
-    private data class Authentication(
-        val accessToken: String,
-        val tokenType: String?,
-        val expiresIn: String?
-    )
 }

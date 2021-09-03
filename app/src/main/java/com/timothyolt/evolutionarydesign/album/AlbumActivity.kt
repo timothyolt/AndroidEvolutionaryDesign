@@ -15,7 +15,8 @@ import com.timothyolt.evolutionarydesign.image.Image
 import com.timothyolt.evolutionarydesign.image.ImageAdapter
 import com.timothyolt.evolutionarydesign.R
 import com.timothyolt.evolutionarydesign.auth.Authentication
-import com.timothyolt.evolutionarydesign.networking.asUrlReadBytes
+import com.timothyolt.evolutionarydesign.networking.asUrl
+import com.timothyolt.evolutionarydesign.networking.readBytes
 import com.timothyolt.evolutionarydesign.requireInjector
 import kotlinx.coroutines.*
 import org.json.JSONObject
@@ -65,7 +66,7 @@ class AlbumActivity : AppCompatActivity() {
     }
 
     private suspend fun getAlbum(albumId: String): Album = withContext(Dispatchers.IO) {
-        val bytes = "https://api.imgur.com/3/album/$albumId".asUrlReadBytes {
+        val bytes = "https://api.imgur.com/3/album/$albumId".asUrl().readBytes {
             addRequestProperty("Authorization", "Client-ID 6b1112a4f9783ad")
         }
         val string = String(bytes)
