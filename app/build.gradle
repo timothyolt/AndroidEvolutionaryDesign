@@ -49,7 +49,8 @@ android {
                     def camelCaseKey = camelCaseWords.join("")
                     manifestPlaceholders.put(camelCaseKey, it.getValue().toString())
 
-                    def upperCaseKey = localKey.replace('.', '_').toUpperCase()
+                    def prefix = "OAUTH"
+                    def upperCaseKey = prefix + "_" + localKey.substring(prefix.size()).toUpperCase()
                     buildConfigField "String", upperCaseKey, "\""+it.getValue().toString()+"\""
                 }
 
