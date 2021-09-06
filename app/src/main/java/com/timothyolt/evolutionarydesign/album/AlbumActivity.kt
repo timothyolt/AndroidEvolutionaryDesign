@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Base64
+import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
@@ -89,7 +90,7 @@ class AlbumActivity : AppCompatActivity() {
         // might be better to stream this directly from the local file
         val pngBase64String = image.toCompressedBase64()
 
-        "".asUrl().connection<HttpURLConnection, ByteArray>{
+        "https://api.imgur.com/3/upload".asUrl().connection<HttpURLConnection, ByteArray>{
             writeFormData(listOf(
                 "image" to pngBase64String,
                 "type" to "base64"
@@ -98,6 +99,8 @@ class AlbumActivity : AppCompatActivity() {
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 readBytes()
             } else {
+                val errorBody = readBytes()
+                Log.e("ImgurUpload", String(errorBody))
                 error("Non-OK status $responseCode")
             }
         }
