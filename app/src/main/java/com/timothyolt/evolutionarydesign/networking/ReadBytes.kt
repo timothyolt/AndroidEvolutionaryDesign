@@ -12,11 +12,3 @@ suspend fun URLConnection.readBytes(): ByteArray = withContext(Dispatchers.IO) {
         .buffered()
         .use { it.readBytes() }
 }
-
-fun String.asUrl(): URL {
-    return URL(this)
-}
-
-suspend fun <T> URL.connection(block: suspend URLConnection.() -> T): T {
-    return (openConnection() as HttpURLConnection).block()
-}
