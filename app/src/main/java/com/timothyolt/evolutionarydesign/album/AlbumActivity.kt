@@ -13,14 +13,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
+import com.timothyolt.evolutionarydesign.BuildConfig
 import com.timothyolt.evolutionarydesign.image.Image
 import com.timothyolt.evolutionarydesign.image.ImageAdapter
 import com.timothyolt.evolutionarydesign.R
 import com.timothyolt.evolutionarydesign.auth.Authentication
-import com.timothyolt.evolutionarydesign.networking.asUrl
-import com.timothyolt.evolutionarydesign.networking.connection
-import com.timothyolt.evolutionarydesign.networking.readBytes
-import com.timothyolt.evolutionarydesign.networking.writeBytes
+import com.timothyolt.evolutionarydesign.networking.*
 import com.timothyolt.evolutionarydesign.requireInjector
 import kotlinx.coroutines.*
 import org.json.JSONObject
@@ -74,7 +72,7 @@ class AlbumActivity : AppCompatActivity() {
 
     private suspend fun getAlbum(albumId: String): Album = withContext(Dispatchers.IO) {
         val json = "https://api.imgur.com/3/album/$albumId".asUrl().connection {
-            addRequestProperty("Authorization", "Client-ID 6b1112a4f9783ad")
+            addRequestProperty("Authorization", "Client-ID ${BuildConfig.IMGUR_CLIENT_ID}")
             readJson()
         }
 
@@ -90,16 +88,18 @@ class AlbumActivity : AppCompatActivity() {
         // might be better to stream this directly from the local file
         val pngBase64String = image.toCompressedBase64()
 
-        "https://api.imgur.com/3/upload".asUrl().connection<HttpURLConnection, ByteArray>{
+        "https://api.imgur.com/3/upload".asUrl().connection<HttpURLConnection, Unit> {
+            addRequestProperty("Authentication", "Bearer ${dependencies.authentication.accessToken}")
             writeFormData(listOf(
                 "image" to pngBase64String,
                 "type" to "base64"
             ))
             val responseCode = responseCode
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                readBytes()
+                val bytes = readBytes()
+                Log.w("ImgurUpload", String(bytes))
             } else {
-                val errorBody = readBytes()
+                val errorBody = readErrorBytes()
                 Log.e("ImgurUpload", String(errorBody))
                 error("Non-OK status $responseCode")
             }
@@ -147,21 +147,25 @@ private suspend fun URLConnection.writeFormData(fields: List<Pair<String, String
     val boundary = "boundary"
 
     val byteStream = ByteArrayOutputStream()
-    val writer = PrintWriter(byteStream)
+    val writer = PrintWriter(byteStream, true)
 
     for (field in fields) {
-        writer.writeFormPart(field, newLine)
+        writer.writeFormPart(field, boundary, newLine)
     }
 
     writer.writeFormFinish(boundary, newLine)
 
-    writeBytes("multipart/form-data; boundary=$boundary", byteStream.toByteArray())
+    val bytes = byteStream.toByteArray()
+
+    writeBytes("multipart/form-data; boundary=$boundary", bytes)
 }
 
 private fun PrintWriter.writeFormPart(
     field: Pair<String, String>,
+    boundary: String,
     newLine: String
 ) {
+    append("--$boundary").append(newLine);
     append("Content-Disposition: form-data; name=\"${field.first}\"").append(newLine)
     append("Content-Type: text/plain; charset=${Charsets.UTF_8}").append(newLine)
     append(newLine)

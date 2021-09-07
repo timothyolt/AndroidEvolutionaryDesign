@@ -12,3 +12,11 @@ suspend fun URLConnection.readBytes(): ByteArray = withContext(Dispatchers.IO) {
         .buffered()
         .use { it.readBytes() }
 }
+
+@Suppress("BlockingMethodInNonBlockingContext")
+suspend fun HttpURLConnection.readErrorBytes(): ByteArray = withContext(Dispatchers.IO) {
+    errorStream
+        .buffered()
+        .use { it.readBytes() }
+}
+
