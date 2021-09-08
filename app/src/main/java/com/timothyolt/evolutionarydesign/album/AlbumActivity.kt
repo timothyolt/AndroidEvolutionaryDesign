@@ -89,7 +89,7 @@ class AlbumActivity : AppCompatActivity() {
         val pngBase64String = image.toCompressedBase64()
 
         "https://api.imgur.com/3/upload".asUrl().connection<HttpURLConnection, Unit> {
-            addRequestProperty("Authentication", "Bearer ${dependencies.authentication.accessToken}")
+            addRequestProperty("Authorization", "Bearer ${dependencies.authentication.accessToken}")
             writeFormData(listOf(
                 "image" to pngBase64String,
                 "type" to "base64"
@@ -156,6 +156,7 @@ private suspend fun URLConnection.writeFormData(fields: List<Pair<String, String
     writer.writeFormFinish(boundary, newLine)
 
     val bytes = byteStream.toByteArray()
+    val string = String(bytes)
 
     writeBytes("multipart/form-data; boundary=$boundary", bytes)
 }
@@ -166,8 +167,8 @@ private fun PrintWriter.writeFormPart(
     newLine: String
 ) {
     append("--$boundary").append(newLine);
-    append("Content-Disposition: form-data; name=\"${field.first}\"").append(newLine)
-    append("Content-Type: text/plain; charset=${Charsets.UTF_8}").append(newLine)
+    append("Content-Disposition: form-data; name=\"${field.first}\";").append(newLine)
+    append("Content-Type: text/plain;").append(newLine)
     append(newLine)
     append(field.second).append(newLine)
     flush()
