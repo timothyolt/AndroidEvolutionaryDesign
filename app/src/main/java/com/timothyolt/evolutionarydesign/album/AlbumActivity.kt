@@ -20,7 +20,6 @@ import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.io.OutputStream
-import java.io.PrintWriter
 import java.net.HttpURLConnection
 import java.net.URLConnection
 import java.util.Base64
@@ -135,42 +134,4 @@ private fun InputStream.transferTo(outputStream: OutputStream): Long {
         transferred += read
     }
     return transferred
-}
-
-private suspend fun URLConnection.writeFormData(fields: List<Pair<String, String>>) {
-    val newLine = "\r\n"
-    val boundary = "boundary"
-
-    val byteStream = ByteArrayOutputStream()
-    val writer = PrintWriter(byteStream, true)
-
-    for (field in fields) {
-        writer.writeFormPart(field, boundary, newLine)
-    }
-
-    writer.writeFormFinish(boundary, newLine)
-
-    val bytes = byteStream.toByteArray()
-    val string = String(bytes)
-
-    writeBytes("multipart/form-data; boundary=$boundary", bytes)
-}
-
-private fun PrintWriter.writeFormPart(
-    field: Pair<String, String>,
-    boundary: String,
-    newLine: String
-) {
-    append("--$boundary").append(newLine);
-    append("Content-Disposition: form-data; name=\"${field.first}\";").append(newLine)
-    append("Content-Type: text/plain;").append(newLine)
-    append(newLine)
-    append(field.second).append(newLine)
-    flush()
-}
-
-private fun PrintWriter.writeFormFinish(boundary: String, newLine: String) {
-    flush()
-    append("--$boundary--").append(newLine)
-    close()
 }
