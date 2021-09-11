@@ -1,11 +1,6 @@
 package com.timothyolt.evolutionarydesign.album
 
-import android.graphics.Bitmap
-import android.graphics.ImageDecoder
-import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
-import android.util.Base64
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
@@ -23,9 +18,12 @@ import com.timothyolt.evolutionarydesign.requireInjector
 import kotlinx.coroutines.*
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
+import java.io.InputStream
+import java.io.OutputStream
 import java.io.PrintWriter
 import java.net.HttpURLConnection
 import java.net.URLConnection
+import java.util.Base64
 
 class AlbumActivity : AppCompatActivity() {
 
@@ -39,15 +37,7 @@ class AlbumActivity : AppCompatActivity() {
     private val pickImage = registerForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri ->
-        val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            ImageDecoder.createSource(contentResolver, uri)
-                .let { source -> ImageDecoder.decodeBitmap(source) }
-        }
-        else {
-            MediaStore.Images.Media.getBitmap(contentResolver, uri)
-        }
-
-        uploadImage(bitmap)
+        uploadImage(contentResolver.openInputStream(uri)!!)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,9 +74,11 @@ class AlbumActivity : AppCompatActivity() {
      *
      * @return A reference to the upload job.
      */
-    private fun uploadImage(image: Bitmap) = GlobalScope.launch {
-        // might be better to stream this directly from the local file
-        val pngBase64String = image.toCompressedBase64()
+    private fun uploadImage(image: InputStream) = GlobalScope.launch {
+        // ok to write this to a string rather than totally streaming it, because Imgur caps uploads to 10MB
+        val imageBytes = ByteArrayOutputStream()
+        image.transferTo(Base64.getEncoder().wrap(imageBytes))
+        val pngBase64String = String(imageBytes.toByteArray())
 
         "https://api.imgur.com/3/upload".asUrl().connection<HttpURLConnection, Unit> {
             addRequestProperty("Authorization", "Bearer ${dependencies.authentication.accessToken}")
@@ -134,12 +126,15 @@ private suspend fun URLConnection.readJson(): JSONObject {
     return JSONObject(string)
 }
 
-private fun Bitmap.toCompressedBase64(): String {
-    val outputStream = ByteArrayOutputStream()
-    compress(Bitmap.CompressFormat.PNG, 0, outputStream)
-    val pngBytes = outputStream.toByteArray()
-    val pngBase64 = Base64.encode(pngBytes, 0)
-    return String(pngBase64)
+private fun InputStream.transferTo(outputStream: OutputStream): Long {
+    var transferred: Long = 0
+    val buffer = ByteArray(8192)
+    var read: Int
+    while (read(buffer, 0, 8192).also { read = it } >= 0) {
+        outputStream.write(buffer, 0, read)
+        transferred += read
+    }
+    return transferred
 }
 
 private suspend fun URLConnection.writeFormData(fields: List<Pair<String, String>>) {

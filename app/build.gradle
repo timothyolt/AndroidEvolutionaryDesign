@@ -27,7 +27,7 @@ android {
 
     defaultConfig {
         applicationId "com.timothyolt.evolutionarydesign"
-        minSdkVersion 23
+        minSdkVersion 26
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
