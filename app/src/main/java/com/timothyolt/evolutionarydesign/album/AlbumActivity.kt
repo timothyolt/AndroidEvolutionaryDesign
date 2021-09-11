@@ -19,9 +19,7 @@ import kotlinx.coroutines.*
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
-import java.io.OutputStream
 import java.net.HttpURLConnection
-import java.net.URLConnection
 import java.util.Base64
 
 class AlbumActivity : AppCompatActivity() {
@@ -118,20 +116,3 @@ private fun JSONObject.asImage() = Image(
     description = getString("description"),
     link = getString("link")
 )
-
-private suspend fun URLConnection.readJson(): JSONObject {
-    val bytes = readBytes()
-    val string = String(bytes)
-    return JSONObject(string)
-}
-
-private fun InputStream.transferTo(outputStream: OutputStream): Long {
-    var transferred: Long = 0
-    val buffer = ByteArray(8192)
-    var read: Int
-    while (read(buffer, 0, 8192).also { read = it } >= 0) {
-        outputStream.write(buffer, 0, read)
-        transferred += read
-    }
-    return transferred
-}
