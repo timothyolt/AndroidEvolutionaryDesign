@@ -3,10 +3,10 @@
           package="com.timothyolt.evolutionarydesign">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
             android:name=".ReleaseEvolutionaryDesignApp"
-            android:allowBackup="true"
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
             android:roundIcon="@mipmap/ic_launcher_round"
@@ -32,6 +32,7 @@
             <meta-data android:name="android.app.shortcuts"
                        android:resource="@xml/shortcuts" />
         </activity>
+        <service android:name=".upload.UploadService"/>
     </application>
 
 </manifest>
