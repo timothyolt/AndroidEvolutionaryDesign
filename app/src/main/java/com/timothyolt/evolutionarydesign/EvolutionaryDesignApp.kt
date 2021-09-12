@@ -10,8 +10,9 @@ import com.timothyolt.evolutionarydesign.auth.AuthenticationActivity
 import com.timothyolt.evolutionarydesign.networking.asUrl
 import com.timothyolt.evolutionarydesign.networking.connection
 import com.timothyolt.evolutionarydesign.networking.readBytes
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import com.timothyolt.evolutionarydesign.notifications.Notifications
+import com.timothyolt.evolutionarydesign.upload.UploadService
+import kotlinx.coroutines.*
 
 interface EvolutionaryDesignApp {
     val injector: Injector
@@ -20,11 +21,14 @@ interface EvolutionaryDesignApp {
 interface Injector {
     fun inject(activity: AlbumActivity): AlbumActivity.Dependencies
     fun inject(activity: AuthenticationActivity): AuthenticationActivity.Dependencies
+    fun inject(uploadService: UploadService): UploadService.Dependencies
 }
 
 fun Context.requireInjector() = (applicationContext as EvolutionaryDesignApp).injector
 
 class ReleaseEvolutionaryDesignApp : Application(), EvolutionaryDesignApp {
+
+    private val lifecycleScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     private val authentication = Authentication()
 
@@ -33,7 +37,6 @@ class ReleaseEvolutionaryDesignApp : Application(), EvolutionaryDesignApp {
         override fun inject(activity: AlbumActivity) =
             object : AlbumActivity.Dependencies {
                 override val albumId = "dTI1d"
-                override val authentication get() = this@ReleaseEvolutionaryDesignApp.authentication.state!!
             }
 
         override fun inject(activity: AuthenticationActivity) =
@@ -43,11 +46,20 @@ class ReleaseEvolutionaryDesignApp : Application(), EvolutionaryDesignApp {
                 override val navigateToMain = Intent(activity, AlbumActivity::class.java)
                 override val authentication = this@ReleaseEvolutionaryDesignApp.authentication
             }
+
+        override fun inject(uploadService: UploadService) = object : UploadService.Dependencies {
+            override val notifications get() = Notifications(
+                context = applicationContext,
+                uploadChannelId = "uploads"
+            )
+            override val accessToken: String get() = authentication.state!!.accessToken
+            override val uploadNotificationId: Int = 1
+        }
     }
 
     override fun onCreate() {
         super.onCreate()
-        GlobalScope.launch {
+        lifecycleScope.launch {
             "https://api.imgur.com/3/credits".asUrl().connection {
                 addRequestProperty("Authorization", "Client-ID ${BuildConfig.IMGUR_CLIENT_ID}")
                 Log.w("EvolutionaryDesignApp", String(readBytes()))
