@@ -3,4 +3,5 @@
 
     <!-- Because we are doing auth out-of-order right now -->
     <string name="bypass_oauth">Bypass OAuth</string>
+    <string name="upload">Upload</string>
 </resources>

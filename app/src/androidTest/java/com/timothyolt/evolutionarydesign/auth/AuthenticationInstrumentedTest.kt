@@ -27,14 +27,19 @@ class AuthenticationInstrumentedTest {
         val openImgurIntent = allOf(hasAction(Intent.ACTION_VIEW), hasData("http://timothyolt.com"))
         intending(openImgurIntent)
 
+        val authentication = Authentication()
+        val initialAuthenticationState = authentication.state
+
         launchActivity(Injector::inject, AuthenticationActivity::class) { activity ->
             object : AuthenticationActivity.Dependencies {
                 override val oAuthRequestUrl = "http://timothyolt.com"
                 override val oAuthCallbackUrl = "http://timothyolt.com/android-evolutionary-design/login"
                 override val navigateToMain = Intent(activity, AlbumActivity::class.java)
+                override val authentication = authentication
             }
         }
 
+        assertEquals(initialAuthenticationState, authentication.state)
         intended(openImgurIntent)
         Intents.release()
     }
@@ -43,6 +48,8 @@ class AuthenticationInstrumentedTest {
     fun resumeAuthentication() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val mainActivityMonitor = instrumentation.addMonitor(StubActivity::class.java.name, null, false)
+
+        val authentication = Authentication()
 
         val intent = Intent(
             Intent.ACTION_VIEW
@@ -54,10 +61,18 @@ class AuthenticationInstrumentedTest {
                 override val oAuthRequestUrl = "http://timothyolt.com"
                 override val oAuthCallbackUrl = "http://timothyolt.com/android-evolutionary-design/login"
                 override val navigateToMain = Intent(instrumentation.context, StubActivity::class.java)
+                override val authentication = authentication
             }
         }
 
-        // todo: assert login state set
+        assertEquals(
+            Authentication.State(
+                accessToken = "test",
+                tokenType = null,
+                expiresIn = null
+            ),
+            authentication.state
+        )
         val hitMainActivity = instrumentation.checkMonitorHit(mainActivityMonitor, 1)
         assertEquals(true, hitMainActivity)
 

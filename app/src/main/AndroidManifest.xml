@@ -23,9 +23,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
-                        android:scheme="http"
-                        android:host="timothyolt.com"
-                        android:path="/android-evolutionary-design/login"
+                        android:scheme="${oauthScheme}"
+                        android:host="${oauthHost}"
+                        android:path="${oauthPath}"
                 />
             </intent-filter>
             <!-- Because we are doing auth out-of-order right now -->

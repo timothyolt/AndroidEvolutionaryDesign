@@ -9,9 +9,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.timothyolt.evolutionarydesign.R
-import com.timothyolt.evolutionarydesign.networking.asUrlReadBytes
+import com.timothyolt.evolutionarydesign.networking.asUrl
+import com.timothyolt.evolutionarydesign.networking.connection
+import com.timothyolt.evolutionarydesign.networking.readBytes
 import kotlinx.coroutines.*
-import java.net.HttpURLConnection
 
 class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     constructor(parent: ViewGroup) : this(
@@ -37,9 +38,7 @@ class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 }
 
 suspend fun getBitmap(imageUrl: String): Bitmap = withContext(Dispatchers.IO) {
-    val bytes = imageUrl.asUrlReadBytes {
-        (this as HttpURLConnection).requestMethod = "GET"
-    }
+    val bytes = imageUrl.asUrl().connection { readBytes() }
 
     BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
 }

@@ -3,16 +3,56 @@ plugins {
     id 'kotlin-android'
 }
 
+static Map<String, ?> propertiesWithLocals(Project project) {
+    def properties = new HashMap<String, ?>()
+    properties.putAll(localProperties(project.rootProject))
+    properties.putAll(localProperties(project))
+    properties.putAll(project.properties)
+    return properties
+}
+
+static Map<String, ?> localProperties(Project project) {
+    def file = project.rootProject.file('local.properties')
+    if (!file.exists()) return new HashMap<String, ?>()
+    return file.withReader('UTF-8') { reader ->
+        Properties localProperties = new Properties()
+        localProperties.load(reader)
+        return localProperties
+    } as Map<String, ?>
+}
+
 android {
     // instrumented test bug https://github.com/android/android-test/issues/743
     compileSdkVersion 29
 
     defaultConfig {
         applicationId "com.timothyolt.evolutionarydesign"
-        minSdkVersion 23
+        minSdkVersion 26
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
+
+        def localProperties = localProperties(project)
+
+        println localProperties.entrySet().size()
+        localProperties
+                .entrySet()
+                .findAll {
+                    it.getKey().startsWith("evolutionarydesign.runtime.")
+                }.forEach {
+                    def localKey = it.getKey().replaceFirst("evolutionarydesign.runtime.", "")
+
+                    def keyWords = localKey.split('\\.').toList()
+                    def camelCaseWords = keyWords.take(1) + keyWords.drop(1).collect {
+                        it[0].capitalize() + it.substring(1, it.length())
+                    }
+                    def camelCaseKey = camelCaseWords.join("")
+                    manifestPlaceholders.put(camelCaseKey, it.getValue().toString())
+
+                    def prefix = "OAUTH"
+                    def upperCaseKey = localKey.replace('.', '_').toUpperCase()
+                    buildConfigField "String", upperCaseKey, "\""+it.getValue().toString()+"\""
+                }
 
         testInstrumentationRunner "com.timothyolt.evolutionarydesign.MyTestRunner"
     }
