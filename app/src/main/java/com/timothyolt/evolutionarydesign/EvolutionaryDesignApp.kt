@@ -6,6 +6,7 @@ import android.content.Intent
 import android.util.Log
 import com.timothyolt.evolutionarydesign.album.AlbumActivity
 import com.timothyolt.evolutionarydesign.auth.Authentication
+import com.timothyolt.evolutionarydesign.album.AlbumViewModelImpl
 import com.timothyolt.evolutionarydesign.auth.AuthenticationActivity
 import com.timothyolt.evolutionarydesign.networking.asUrl
 import com.timothyolt.evolutionarydesign.networking.connection
@@ -37,6 +38,7 @@ class ReleaseEvolutionaryDesignApp : Application(), EvolutionaryDesignApp {
         override fun inject(activity: AlbumActivity) =
             object : AlbumActivity.Dependencies {
                 override val albumId = "dTI1d"
+                override val viewModel = AlbumViewModelImpl()
             }
 
         override fun inject(activity: AuthenticationActivity) =

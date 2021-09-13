@@ -7,20 +7,18 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
-import com.timothyolt.evolutionarydesign.BuildConfig
-import com.timothyolt.evolutionarydesign.image.Image
-import com.timothyolt.evolutionarydesign.image.ImageAdapter
 import com.timothyolt.evolutionarydesign.R
-import com.timothyolt.evolutionarydesign.networking.*
+import com.timothyolt.evolutionarydesign.image.ImageAdapter
 import com.timothyolt.evolutionarydesign.requireInjector
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import com.timothyolt.evolutionarydesign.upload.UploadService
-import kotlinx.coroutines.*
-import org.json.JSONObject
 
 class AlbumActivity : AppCompatActivity() {
 
     interface Dependencies {
         val albumId: String
+        val viewModel: AlbumViewModel
     }
 
     private lateinit var dependencies: Dependencies
@@ -33,6 +31,7 @@ class AlbumActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         dependencies = requireInjector().inject(this)
         setContentView(R.layout.activity_main)
 
@@ -44,41 +43,17 @@ class AlbumActivity : AppCompatActivity() {
         }
 
         lifecycleScope.launch {
-            val album = getAlbum(albumId = dependencies.albumId)
+            dependencies.viewModel.albumState.collect { album ->
+                findViewById<TextView>(R.id.albumTitle).text = album.title
 
-            findViewById<TextView>(R.id.albumTitle).text = album.title
-            adapter.updateImages(album.images)
+                adapter.updateImages(album.images)
+            }
         }
     }
 
-    private suspend fun getAlbum(albumId: String): Album = withContext(Dispatchers.IO) {
-        val json = "https://api.imgur.com/3/album/$albumId".asUrl().connection {
-            addRequestProperty("Authorization", "Client-ID ${BuildConfig.IMGUR_CLIENT_ID}")
-            readJson()
-        }
+    override fun onResume() {
+        super.onResume()
 
-        json.asImgurResponse { asAlbum() }
+        lifecycleScope.launch { dependencies.viewModel.requestAlbum(dependencies.albumId) }
     }
-
 }
-
-private fun <R> JSONObject.asImgurResponse(data: JSONObject.() -> R): R =
-    if (getBoolean("success")) {
-        getJSONObject("data").data()
-    } else error("http code ${getInt("status")}")
-
-private fun JSONObject.asAlbum() = Album(
-    title = getString("title"),
-    description = getString("description"),
-    images = getJSONArray("images").run {
-        (0 until length()).map {
-            getJSONObject(it).asImage()
-        }
-    }
-)
-
-private fun JSONObject.asImage() = Image(
-    title = getString("title"),
-    description = getString("description"),
-    link = getString("link")
-)
