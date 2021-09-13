@@ -1,8 +1,6 @@
 package com.timothyolt.evolutionarydesign
 
-import org.junit.Test
-
-import org.junit.Assert.*
+import kotlin.test.*
 
 /**
  * Example local unit test, which will execute on the development machine (host).
