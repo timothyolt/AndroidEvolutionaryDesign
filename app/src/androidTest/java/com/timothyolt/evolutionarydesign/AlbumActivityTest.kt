@@ -15,6 +15,7 @@ class AlbumActivityTest {
     @Test
     fun test() {
         launchActivity<AlbumActivity>()
-        onView(withId(R.id.helloText)).check(matches(withText("Hello World!")))
+        onView(withId(R.id.helloText))
+            .check(matches(withText("Hello World!")))
     }
 }
