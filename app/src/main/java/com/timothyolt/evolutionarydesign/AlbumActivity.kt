@@ -8,6 +8,7 @@ class AlbumActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(TextView(this).apply {
+            id = 20
             text = "Hello World!"
         })
     }
