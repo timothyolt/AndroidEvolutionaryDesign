@@ -17,7 +17,6 @@ import com.timothyolt.evolutionarydesign.upload.UploadService
 class AlbumActivity : AppCompatActivity() {
 
     interface Dependencies {
-        val albumId: String
         val viewModel: AlbumViewModel
     }
 
@@ -49,11 +48,5 @@ class AlbumActivity : AppCompatActivity() {
                 adapter.updateImages(album.images)
             }
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        lifecycleScope.launch { dependencies.viewModel.requestAlbum(dependencies.albumId) }
     }
 }
