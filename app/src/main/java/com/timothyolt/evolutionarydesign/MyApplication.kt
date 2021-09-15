@@ -1,14 +1,19 @@
 package com.timothyolt.evolutionarydesign
 
 import android.app.Application
-import android.content.Context
 
-fun Context.injector() = (applicationContext as InjectingApplication).injector
+fun inject(albumActivity: AlbumActivity) =
+    (albumActivity.applicationContext as InjectingApplication).inject(albumActivity)
 
 interface InjectingApplication {
-    val injector: Injector
+    fun inject(albumActivity: AlbumActivity): AlbumActivity.Dependencies
 }
 
 class MyApplication : Application(), InjectingApplication {
-    override val injector = MainInjector()
+
+    private val applicationAlbumService = NetworkAlbumService()
+
+    override fun inject(albumActivity: AlbumActivity) = object : AlbumActivity.Dependencies {
+        override val albumService: AlbumService = applicationAlbumService
+    }
 }

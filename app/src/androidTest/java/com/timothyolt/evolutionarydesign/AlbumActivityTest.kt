@@ -24,7 +24,7 @@ class AlbumActivityTest {
             idler.idleUntilCurrentJobsFinish(activity)
         }
         onView(withId(R.id.helloText))
-            .check(matches(withText("Udp")))
+            .check(matches(withText("NotUDP")))
 
         unregisterLifecycleIdling(idler)
     }
