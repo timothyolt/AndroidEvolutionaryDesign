@@ -6,21 +6,6 @@ import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 
-data class Image(val bytes: ByteArray) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as Image
-
-        if (!bytes.contentEquals(other.bytes)) return false
-
-        return true
-    }
-
-    override fun hashCode() = bytes.contentHashCode()
-}
-
 interface AlbumService {
     data class Album(
         val title: String,
@@ -30,6 +15,7 @@ interface AlbumService {
 }
 
 class NetworkAlbumService : AlbumService {
+
     override suspend fun getAlbum(): AlbumService.Album {
         val albumJson = getAlbumJson()
         val data = albumJson.getJSONObject("data")
@@ -42,15 +28,7 @@ class NetworkAlbumService : AlbumService {
             )
         )
     }
-
-    private suspend fun getImage(link: String) = withContext(Dispatchers.IO) {
-        val bytes = URL(link)
-            .openConnection()
-            .getInputStream()
-            .use { it.readBytes() }
-        Image(bytes)
-    }
-
+    
     private suspend fun getAlbumJson(): JSONObject {
 
         return withContext(Dispatchers.IO) {
@@ -70,5 +48,13 @@ class NetworkAlbumService : AlbumService {
                 }
             JSONObject(String(albumBytes))
         }
+    }
+
+    private suspend fun getImage(link: String): Image = withContext(Dispatchers.IO) {
+        val bytes = URL(link)
+            .openConnection()
+            .getInputStream()
+            .use { it.readBytes() }
+        Image(bytes)
     }
 }
