@@ -16,7 +16,7 @@ class AlbumActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        dependencies = inject(this)
+        dependencies = injector().inject(this)
         setContentView(R.layout.activity_album)
         lifecycleScope.launch {
             findViewById<TextView>(R.id.helloText).text = dependencies.albumService.getAlbumTitle()
