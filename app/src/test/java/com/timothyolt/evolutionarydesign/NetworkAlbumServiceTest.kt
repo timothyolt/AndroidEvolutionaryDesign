@@ -5,11 +5,23 @@ import kotlin.test.*
 
 class NetworkAlbumServiceTest {
     @Test
-    fun test() {
+    fun albumTitle() {
         val albumService = NetworkAlbumService()
-        val albumTitle = runBlocking {
-            albumService.getAlbumTitle()
+        val album = runBlocking {
+            albumService.getAlbum()
         }
-        assertEquals("Udp", albumTitle)
+        assertEquals("Udp", album.title)
+    }
+
+    @Test
+    fun albumImage() {
+        val albumService = NetworkAlbumService()
+        val album = runBlocking {
+            albumService.getAlbum()
+        }
+        val imageBytes = this::class.java.classLoader!!
+            .getResourceAsStream("kXieZOB.png")!!.readBytes()
+        val image = Image(imageBytes)
+        assertEquals(image, album.image)
     }
 }
