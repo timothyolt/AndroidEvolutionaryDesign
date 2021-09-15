@@ -4,11 +4,8 @@ import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import com.timothyolt.evolutionarydesign.album.AlbumActivity
-import com.timothyolt.evolutionarydesign.album.AlbumRepository
-import com.timothyolt.evolutionarydesign.album.AlbumRepositoryImpl
+import com.timothyolt.evolutionarydesign.album.*
 import com.timothyolt.evolutionarydesign.auth.Authentication
-import com.timothyolt.evolutionarydesign.album.AlbumViewModelImpl
 import com.timothyolt.evolutionarydesign.auth.AuthenticationActivity
 import com.timothyolt.evolutionarydesign.networking.asUrl
 import com.timothyolt.evolutionarydesign.networking.connection
@@ -36,7 +33,10 @@ class ReleaseEvolutionaryDesignApp : Application(), EvolutionaryDesignApp {
     private val authentication = Authentication()
 
     private val albumRepository: AlbumRepository by lazy {
-        AlbumRepositoryImpl("dTI1d")
+        AlbumRepositoryImpl(
+            "dTI1d",
+            ImgurAlbumSource()
+        )
     }
 
     override val injector = object : Injector {
