@@ -2,7 +2,7 @@ package com.timothyolt.evolutionarydesign
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.timothyolt.evolutionarydesign.AlbumService.Album
+import com.timothyolt.evolutionarydesign.AlbumRepository.Album
 
 class AlbumAdapter: RecyclerView.Adapter<ImageViewHolder>() {
     private var album: Album? = null

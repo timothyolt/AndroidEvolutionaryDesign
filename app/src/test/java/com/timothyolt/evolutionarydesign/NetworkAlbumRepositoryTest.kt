@@ -3,10 +3,10 @@ package com.timothyolt.evolutionarydesign
 import kotlinx.coroutines.runBlocking
 import kotlin.test.*
 
-class NetworkAlbumServiceTest {
+class NetworkAlbumRepositoryTest {
     @Test
     fun albumTitle() {
-        val albumService = NetworkAlbumService()
+        val albumService = NetworkAlbumRepository()
         val album = runBlocking {
             albumService.getAlbum()
         }
@@ -15,7 +15,7 @@ class NetworkAlbumServiceTest {
 
     @Test
     fun albumImage() {
-        val albumService = NetworkAlbumService()
+        val albumService = NetworkAlbumRepository()
         val album = runBlocking {
             albumService.getAlbum()
         }

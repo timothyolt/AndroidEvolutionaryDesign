@@ -5,9 +5,9 @@ interface Injector {
 }
 
 class MainInjector : Injector {
-    private val applicationAlbumService = NetworkAlbumService()
+    private val applicationAlbumService = NetworkAlbumRepository()
 
     override fun inject(albumActivity: AlbumActivity) = object : AlbumActivity.Dependencies {
-        override val albumService: AlbumService = applicationAlbumService
+        override val albumRepository: AlbumRepository = applicationAlbumService
     }
 }

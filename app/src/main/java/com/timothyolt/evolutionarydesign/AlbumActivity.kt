@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 class AlbumActivity : AppCompatActivity() {
 
     interface Dependencies {
-        val albumService: AlbumService
+        val albumRepository: AlbumRepository
     }
 
     private lateinit var dependencies: Dependencies
@@ -24,7 +24,7 @@ class AlbumActivity : AppCompatActivity() {
         findViewById<RecyclerView>(R.id.albumImagesRecycler).adapter = adapter 
         
         lifecycleScope.launch {
-            val album = dependencies.albumService.getAlbum()
+            val album = dependencies.albumRepository.getAlbum()
 
             findViewById<TextView>(R.id.imageTitle).text = album.title
             adapter.updateAlbum(album)

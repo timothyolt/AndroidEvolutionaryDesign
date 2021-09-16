@@ -6,32 +6,31 @@ import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 
-interface AlbumService {
+interface AlbumRepository {
     data class Album(
         val title: String,
         val images: List<Image>
     )
+
     suspend fun getAlbum(): Album
 }
 
-class NetworkAlbumService : AlbumService {
+class NetworkAlbumRepository : AlbumRepository {
 
-    override suspend fun getAlbum(): AlbumService.Album {
+    override suspend fun getAlbum(): AlbumRepository.Album {
         val albumJson = getAlbumJson()
         val data = albumJson.getJSONObject("data")
-        return AlbumService.Album(
+        return AlbumRepository.Album(
             title = data.getString("title"),
-            image = getImage(
-                data.getJSONArray("images")
-                    .getJSONObject(0)
-                    .getString("link")
-            )
+            images = data.getJSONArray("images")
+                .run { (0 until length()).map { getJSONObject(it) } }
+                .map { getImage(it.getString("link")) }
         )
     }
-    
+
     private suspend fun getAlbumJson(): JSONObject {
         return withContext(Dispatchers.IO) {
-            val albumBytes = URL("https://api.imgur.com/3/album/xRvUk7p")
+            val albumBytes = URL("https://api.imgur.com/3/album/xxrXmHr")
                 .openConnection()
                 .run { this as HttpURLConnection }
                 .apply {
