@@ -54,8 +54,7 @@ android {
                     buildConfigField "String", upperCaseKey, "\""+it.getValue().toString()+"\""
                 }
 
-//        testInstrumentationRunner "com.timothyolt.evolutionarydesign.apparatus.MyTestRunner"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.timothyolt.evolutionarydesign.apparatus.InjectingAppTestRunner"
     }
 
     testOptions {

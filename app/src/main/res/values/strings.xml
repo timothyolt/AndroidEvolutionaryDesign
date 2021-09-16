@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">AndroidEvolutionaryDesign</string>
+    <string name="a_picture_from_imgur">A picture from Imgur</string>
+    <string name="upload">Upload</string>
 </resources>
