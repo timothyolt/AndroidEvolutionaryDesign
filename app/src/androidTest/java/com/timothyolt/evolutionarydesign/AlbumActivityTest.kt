@@ -26,18 +26,20 @@ class AlbumActivityTest {
 
         launchActivity(Injector::inject, AlbumActivity::class) {
             object : AlbumActivity.Dependencies {
-                override val albumRepository = object : AlbumRepository {
-                    override suspend fun getAlbum(albumId: String) = AlbumRepository.Album(
-                        title = "NotUDP",
-                        images = listOf(Image(ByteArray(0)))
-                    )
-                }
+                override val viewModel = AlbumViewModel(
+                    object : AlbumRepository {
+                        override suspend fun getAlbum(albumId: String) = AlbumRepository.Album(
+                            title = "NotUDP",
+                            images = listOf(Image(ByteArray(0)))
+                        )
+                    }
+                )
             }
         }.onActivity { activity ->
             idler.idleUntilCurrentJobsFinish(activity)
         }
 
-        onView(withId(R.id.imageTitle))
+        onView(withId(R.id.albumTitle))
             .check(matches(withText("NotUDP")))
 
         unregisterLifecycleIdling(idler)
@@ -54,12 +56,14 @@ class AlbumActivityTest {
 
         launchActivity(Injector::inject, AlbumActivity::class) {
             object : AlbumActivity.Dependencies {
-                override val albumRepository = object : AlbumRepository {
-                    override suspend fun getAlbum(albumId: String) = AlbumRepository.Album(
-                        title = "title",
-                        images = listOf(Image(bytes1by1))
-                    )
-                }
+                override val viewModel = AlbumViewModel(
+                    object : AlbumRepository {
+                        override suspend fun getAlbum(albumId: String) = AlbumRepository.Album(
+                            title = "title",
+                            images = listOf(Image(bytes1by1))
+                        )
+                    }
+                )
             }
         }.onActivity { activity ->
             idler.idleUntilCurrentJobsFinish(activity)

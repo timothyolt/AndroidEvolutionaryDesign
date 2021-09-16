@@ -1,10 +1,21 @@
 package com.timothyolt.evolutionarydesign
 
+import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
+
+class AlbumViewModel(
+    private val repository: AlbumRepository
+) : ViewModel() {
+    val album: Flow<AlbumRepository.Album> = flow {
+        emit(repository.getAlbum("xxrXmHr"))
+    }
+}
 
 interface AlbumRepository {
     data class Album(

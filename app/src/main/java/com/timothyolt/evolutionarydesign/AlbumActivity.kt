@@ -5,12 +5,13 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class AlbumActivity : AppCompatActivity() {
 
     interface Dependencies {
-        val albumRepository: AlbumRepository
+        val viewModel: AlbumViewModel
     }
 
     private lateinit var dependencies: Dependencies
@@ -24,10 +25,10 @@ class AlbumActivity : AppCompatActivity() {
         findViewById<RecyclerView>(R.id.albumImagesRecycler).adapter = adapter 
         
         lifecycleScope.launch {
-            val album = dependencies.albumRepository.getAlbum("xxrXmHr")
-
-            findViewById<TextView>(R.id.imageTitle).text = album.title
-            adapter.updateAlbum(album)
+            dependencies.viewModel.album.collect { album ->
+                findViewById<TextView>(R.id.albumTitle).text = album.title
+                adapter.updateAlbum(album)
+            }
         }
     }
 
