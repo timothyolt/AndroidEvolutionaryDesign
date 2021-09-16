@@ -19,7 +19,7 @@ class AlbumAdapter: RecyclerView.Adapter<ImageViewHolder>() {
         return ImageViewHolder(parent)
     }
 
-    override fun onBindViewHolder(holder: ImageViewHolder, position: Int) = holder.bind(album!!.image)
+    override fun onBindViewHolder(holder: ImageViewHolder, position: Int) = holder.bind(album!!.images[position])
 
-    override fun getItemCount() = if (album == null) 0 else 10
+    override fun getItemCount() = album?.images?.size ?: 0
 }

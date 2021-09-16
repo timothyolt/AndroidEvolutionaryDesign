@@ -29,7 +29,7 @@ class AlbumActivityTest {
                 override val albumService = object : AlbumService {
                     override suspend fun getAlbum() = AlbumService.Album(
                         title = "NotUDP",
-                        image = Image(ByteArray(0))
+                        images = Image(ByteArray(0))
                     )
                 }
             }
@@ -57,7 +57,7 @@ class AlbumActivityTest {
                 override val albumService = object : AlbumService {
                     override suspend fun getAlbum() = AlbumService.Album(
                         title = "title",
-                        image = Image(bytes1by1)
+                        images = Image(bytes1by1)
                     )
                 }
             }

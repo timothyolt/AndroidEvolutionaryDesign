@@ -22,6 +22,6 @@ class NetworkAlbumServiceTest {
         val imageBytes = this::class.java.classLoader!!
             .getResourceAsStream("kXieZOB.png")!!.readBytes()
         val image = Image(imageBytes)
-        assertEquals(image, album.image)
+        assertEquals(image, album.images)
     }
 }

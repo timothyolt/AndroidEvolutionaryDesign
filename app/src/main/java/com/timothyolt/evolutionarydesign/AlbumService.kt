@@ -9,7 +9,7 @@ import java.net.URL
 interface AlbumService {
     data class Album(
         val title: String,
-        val image: Image
+        val images: List<Image>
     )
     suspend fun getAlbum(): Album
 }
@@ -30,7 +30,6 @@ class NetworkAlbumService : AlbumService {
     }
     
     private suspend fun getAlbumJson(): JSONObject {
-
         return withContext(Dispatchers.IO) {
             val albumBytes = URL("https://api.imgur.com/3/album/xRvUk7p")
                 .openConnection()
