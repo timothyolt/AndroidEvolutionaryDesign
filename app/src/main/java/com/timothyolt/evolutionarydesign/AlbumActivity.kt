@@ -1,8 +1,6 @@
 package com.timothyolt.evolutionarydesign
 
-import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -27,9 +25,9 @@ class AlbumActivity : AppCompatActivity() {
         
         lifecycleScope.launch {
             val album = dependencies.albumService.getAlbum()
+
             findViewById<TextView>(R.id.imageTitle).text = album.title
-            
-            adapter.loadAlbum(album)
+            adapter.updateAlbum(album)
         }
     }
 

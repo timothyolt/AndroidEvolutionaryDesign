@@ -6,10 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 class ImageViewHolder(view: View): RecyclerView.ViewHolder(view) {
 
@@ -19,16 +16,14 @@ class ImageViewHolder(view: View): RecyclerView.ViewHolder(view) {
         LayoutInflater.from(parent.context).inflate(R.layout.view_image, parent, false)
     )
 
-    fun bind(getImage: suspend () -> Image) = with(itemView) {
-        scope.launch {
-            val image = getImage()
-            findViewById<ImageView>(R.id.image).setImageBitmap(image.toBitmap())
-        }
+    fun bind(image: Image) = with(itemView) {
+        findViewById<ImageView>(R.id.image).setImageBitmap(image.toBitmap())
     }
 
     private fun Image.toBitmap() = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
 
     fun recycle() {
-
+        scope.coroutineContext.job.cancelChildren()
+        itemView.findViewById<ImageView>(R.id.image).setImageDrawable(null)
     }
 }

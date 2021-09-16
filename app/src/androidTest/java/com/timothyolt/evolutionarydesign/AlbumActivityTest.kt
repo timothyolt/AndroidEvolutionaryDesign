@@ -1,19 +1,19 @@
 package com.timothyolt.evolutionarydesign
 
-import android.content.res.AssetManager
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.widget.ImageView
+import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.timothyolt.evolutionarydesign.apparatus.idling.LifecycleCoroutineIdlingResource
 import com.timothyolt.evolutionarydesign.apparatus.idling.registerLifecycleIdling
 import com.timothyolt.evolutionarydesign.apparatus.idling.unregisterLifecycleIdling
 import com.timothyolt.evolutionarydesign.apparatus.launchActivity
+import org.hamcrest.CoreMatchers.allOf
 import org.junit.runner.RunWith
 import kotlin.test.*
 
@@ -66,8 +66,13 @@ class AlbumActivityTest {
             idler.idleUntilCurrentJobsFinish(activity)
         }
 
-        onView(withId(R.id.image)).check { view, _ ->
-            val imageView = view as ImageView
+        onView(
+            allOf(
+                withParent(withId(R.id.albumImagesRecycler)),
+                withParentIndex(0)
+            )
+        ).check { view, _ ->
+            val imageView = view.findViewById<ImageView>(R.id.image)
             val bitmapDrawable = imageView.drawable as BitmapDrawable
 
             // probably incorrect
