@@ -12,13 +12,13 @@ interface AlbumRepository {
         val images: List<Image>
     )
 
-    suspend fun getAlbum(): Album
+    suspend fun getAlbum(albumId: String): Album
 }
 
 class NetworkAlbumRepository : AlbumRepository {
 
-    override suspend fun getAlbum(): AlbumRepository.Album {
-        val albumJson = getAlbumJson()
+    override suspend fun getAlbum(albumId: String): AlbumRepository.Album {
+        val albumJson = getAlbumJson(albumId)
         val data = albumJson.getJSONObject("data")
         return AlbumRepository.Album(
             title = data.getString("title"),
@@ -28,9 +28,9 @@ class NetworkAlbumRepository : AlbumRepository {
         )
     }
 
-    private suspend fun getAlbumJson(): JSONObject {
+    private suspend fun getAlbumJson(albumId: String): JSONObject {
         return withContext(Dispatchers.IO) {
-            val albumBytes = URL("https://api.imgur.com/3/album/xxrXmHr")
+            val albumBytes = URL("https://api.imgur.com/3/album/$albumId")
                 .openConnection()
                 .run { this as HttpURLConnection }
                 .apply {

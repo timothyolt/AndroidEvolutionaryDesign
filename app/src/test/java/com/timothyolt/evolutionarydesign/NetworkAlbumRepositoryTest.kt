@@ -8,7 +8,7 @@ class NetworkAlbumRepositoryTest {
     fun albumTitle() {
         val albumService = NetworkAlbumRepository()
         val album = runBlocking {
-            albumService.getAlbum()
+            albumService.getAlbum("kXieZOB")
         }
         assertEquals("Udp", album.title)
     }
@@ -17,11 +17,11 @@ class NetworkAlbumRepositoryTest {
     fun albumImage() {
         val albumService = NetworkAlbumRepository()
         val album = runBlocking {
-            albumService.getAlbum()
+            albumService.getAlbum("kXieZOB")
         }
         val imageBytes = this::class.java.classLoader!!
             .getResourceAsStream("kXieZOB.png")!!.readBytes()
         val image = Image(imageBytes)
-        assertEquals(image, album.images)
+        assertEquals(image, album.images.first())
     }
 }

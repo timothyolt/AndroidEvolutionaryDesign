@@ -27,7 +27,7 @@ class AlbumActivityTest {
         launchActivity(Injector::inject, AlbumActivity::class) {
             object : AlbumActivity.Dependencies {
                 override val albumRepository = object : AlbumRepository {
-                    override suspend fun getAlbum() = AlbumRepository.Album(
+                    override suspend fun getAlbum(albumId: String) = AlbumRepository.Album(
                         title = "NotUDP",
                         images = listOf(Image(ByteArray(0)))
                     )
@@ -55,7 +55,7 @@ class AlbumActivityTest {
         launchActivity(Injector::inject, AlbumActivity::class) {
             object : AlbumActivity.Dependencies {
                 override val albumRepository = object : AlbumRepository {
-                    override suspend fun getAlbum() = AlbumRepository.Album(
+                    override suspend fun getAlbum(albumId: String) = AlbumRepository.Album(
                         title = "title",
                         images = listOf(Image(bytes1by1))
                     )

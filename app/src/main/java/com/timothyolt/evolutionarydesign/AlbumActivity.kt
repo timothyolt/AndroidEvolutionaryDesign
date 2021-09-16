@@ -24,7 +24,7 @@ class AlbumActivity : AppCompatActivity() {
         findViewById<RecyclerView>(R.id.albumImagesRecycler).adapter = adapter 
         
         lifecycleScope.launch {
-            val album = dependencies.albumRepository.getAlbum()
+            val album = dependencies.albumRepository.getAlbum("xxrXmHr")
 
             findViewById<TextView>(R.id.imageTitle).text = album.title
             adapter.updateAlbum(album)
