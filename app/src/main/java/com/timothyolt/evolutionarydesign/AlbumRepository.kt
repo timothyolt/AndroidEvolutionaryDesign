@@ -1,6 +1,5 @@
 package com.timothyolt.evolutionarydesign
 
-import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -11,7 +10,7 @@ import java.net.URL
 
 class AlbumViewModel(
     private val repository: AlbumRepository
-) : ViewModel() {
+) {
     val album: Flow<AlbumRepository.Album> = flow {
         emit(repository.getAlbum("xxrXmHr"))
     }
