@@ -10,4 +10,5 @@ class MainInjector : Injector {
     override fun inject(albumActivity: AlbumActivity) = object : AlbumActivity.Dependencies {
         override val viewModel: AlbumViewModel by lazy { AlbumViewModel(albumRepository) }
     }
+
 }
